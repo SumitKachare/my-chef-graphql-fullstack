@@ -6,9 +6,7 @@ export const typeDefs = `#graphql
         email: String!       
         description: String
         cookBooks: [Cookbook]
-        ingredients: [Ingredient]
         recipes: [Recipe]
-        units: [Unit]
         createdAt: String     
         updatedAt: String     
     }
@@ -18,20 +16,11 @@ export const typeDefs = `#graphql
         name: String!
         description: String
         user: User!
-        sections: [Section]
+        recipes: [Recipe]
         createdAt: String     
         updatedAt: String  
     }
   
-    type Section {
-        id: ID!       
-        name: String!
-        description: String
-        createdAt: String     
-        updatedAt: String  
-        cookbook:  Cookbook!
-        recipes: [Recipe]
-    }
 
     type Recipe {
         id: ID!       
@@ -40,8 +29,8 @@ export const typeDefs = `#graphql
         imageUrl:  String
         createdAt: String     
         updatedAt: String 
-        section: Section 
-        user:  User
+        cookbook: Cookbook 
+        user:  User!
         recipeIngredients: [RecipeIngredient] 
         cookingSteps: [CookingSteps]
         cookingTime: String
@@ -52,25 +41,9 @@ export const typeDefs = `#graphql
 
     type RecipeIngredient {
         id: ID!       
-        amount: String
-        recipe: Recipe!     
-        ingredient: Ingredient! 
-        unit: Unit       
+        ingredient: String!
+        recipe: Recipe!         
         ingredientOrder: Int!
-    }
-
-    type Ingredient {
-        id: ID!
-        ingredient: String!        
-        recipeIngredients: [RecipeIngredient]
-        user: User             
-    }
-
-    type Unit {
-        id: ID!
-        unit: String!
-        recipeIngredients: [RecipeIngredient]
-        user: User  
     }
 
     type CookingSteps {
@@ -83,60 +56,52 @@ export const typeDefs = `#graphql
 
     # Inputs here
 
-    input UserInput {      
+    input CreateUserInput {      
         name: String!
         email: String!   
         password: String!    
         description: String
     } 
 
-    input CookbookInput {      
+    input UserPatch {
+        name: String
+        password: String    
+        description: String
+    }
+
+    input UpdateUserInput {      
+        patch: UserPatch
+        email: String!
+    } 
+
+    # Cookbook Input Types
+
+    input CreateCookbookInput {      
         name: String!
         description: String
         userId: Int!
     } 
 
-    input SectionInput {      
-        name: String!
+    input CookbookPatch{
+        name: String
         description: String
-        cookbookId: Int!
-    } 
-
-    input RecipeInput {
-        name: String!
-        description: String
-        imageUrl:  String
-        sectionId: Int! 
-        userId:  Int!
-        cookingTime: String
-        source: String
-        URL: String
-        yeild: String
-    } 
-
-    input RecipeIngredientInput {  
-        amount: String
-        recipeId: Int!     
-        ingredientId: Int! 
-        unitId: Int       
-        ingredientOrder: Int!
     }
 
-    input CookingStepsInput {
-        step: String!
-        stepOrder: Int!
-        recipeId: Int!
+    input UpdateCookbookInput {      
+        patch: CookbookPatch
+        id: ID!
+    }
+
+    input DeleteCookbookInput {      
+        id: ID!
     }
 
     # Queries here
 
     type Query {
         getCookbooks: [Cookbook]
-        getSections: [Section]
         getRecipies: [Recipe]
         getRecipeIngredients: [RecipeIngredient]
-        getIngredients: [Ingredient]
-        getUnits: [Unit]
         getCookingSteps: [CookingSteps] 
         getUser: [User]
     }
@@ -146,14 +111,15 @@ export const typeDefs = `#graphql
     type Mutation {
 
         # Create
-        addUser(userData: UserInput) : User
-        addCookbook(cookbookData: CookbookInput): Cookbook
-        addSection(sectionData: SectionInput) :  Section
-        addRecipe(recipeData: RecipeInput) : Recipe
-        addRecipeIngredient(recipeIngData: RecipeIngredientInput) : RecipeIngredient
-        addIngredient(ingredient: String! , userId: Int): Ingredient
-        addUnit(unit: String , userId: Int): Unit
-        addCookingStep(cookingStepData: CookingStepsInput): CookingSteps 
+        createUser(input: CreateUserInput): User
+        updateUser(input: UpdateUserInput): User
+        
+        # cookbooks mutations
+        createCookbook(input: CreateCookbookInput): Cookbook
+        updateCookbook(input: UpdateCookbookInput): Cookbook
+        deleteCookbook(input: DeleteCookbookInput): Cookbook
+
+
     }
 
 `;

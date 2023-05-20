@@ -1,29 +1,31 @@
+import { GraphQLError } from "graphql";
 import { prisma } from "../config/db.config.js";
 
 export const Query =  {
     getCookbooks: async () => {
-        const data = await prisma.cookbook.findMany({})
-        return data
+        try {
+            const data = await prisma.cookbook.findMany({})
+            return data
+        } catch (error) {
+            throw new GraphQLError(error.message)
+        }
     },
-    getSections: () => {
-        return prisma.section.findMany({})
-    },
-    getRecipies: () => {
-        return prisma.recipe.findMany({})
-    },
-    getRecipeIngredients: () => {
-        return prisma.recipeIngredient.findMany({})
-    },
-    getIngredients: () => {
-        return prisma.ingredient.findMany({})
-    },
-    getUnits: () => {
-        return prisma.unit.findMany({})
-    },
-    getCookingSteps: () => {
-        return prisma.cookingSteps.findMany({})
-    },
-    getUser: () => {
-        return prisma.user.findMany({})
-    }
+    // getRecipies: () => {
+    //     return prisma.recipe.findMany({})
+    // },
+    // getRecipeIngredients: () => {
+    //     return prisma.recipeIngredient.findMany({})
+    // },
+    // getIngredients: () => {
+    //     return prisma.ingredient.findMany({})
+    // },
+    // getUnits: () => {
+    //     return prisma.unit.findMany({})
+    // },
+    // getCookingSteps: () => {
+    //     return prisma.cookingSteps.findMany({})
+    // },
+    // getUser: () => {
+    //     return prisma.user.findMany({})
+    // }
 }

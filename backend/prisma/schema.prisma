@@ -11,40 +11,26 @@ datasource db {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
-  email       String       @unique
+  email       String     @unique
   password    String
   description String?
   cookBooks   Cookbook[]
   recipes     Recipe[]
-  ingredients Ingredient[]
-  units       Unit[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Cookbook {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  description String?
-  image_url   String?
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
-  sections    Section[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Section {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   description String?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  recipes    Recipe[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  cookbookId  Int
-  cookbook    Cookbook @relation(fields: [cookbookId], references: [id])
-  recipes     Recipe[]
 }
 
 model Recipe {
@@ -54,8 +40,8 @@ model Recipe {
   imageUrl          String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  sectionId         Int
-  section           Section            @relation(fields: [sectionId], references: [id])
+  cookbookId        Int
+  cookbook          Cookbook           @relation(fields: [cookbookId], references: [id])
   userId            Int
   user              User               @relation(fields: [userId], references: [id])
   recipeIngredients RecipeIngredient[]
@@ -67,50 +53,18 @@ model Recipe {
 }
 
 model RecipeIngredient {
-  id              Int        @id @default(autoincrement())
-  // to store values like 1/2 ,1/4 etc
-  amount          String 
+  id              Int    @id @default(autoincrement())
+  ingredient      String
   recipeId        Int
-  recipe          Recipe     @relation(fields: [recipeId], references: [id])
-  ingredientId    Int
-  ingredient      Ingredient @relation(fields: [ingredientId], references: [id])
-  unitId          Int?
-  unit            Unit?       @relation(fields: [unitId], references: [id])
+  recipe          Recipe @relation(fields: [recipeId], references: [id])
   ingredientOrder Int
 
   // make sure that that is no same step for a recipe ingredient
   @@unique([recipeId, ingredientOrder])
 }
 
-// this will only store the ingredients. ex : Green Onions , Milk  , Cheese etc
-model Ingredient {
-  id               Int                @id @default(autoincrement())
-  ingredient       String             @unique
-  recipeIngredient RecipeIngredient[]
-  // to show user added ingredients in search
-  userId           Int?
-  user             User?              @relation(fields: [userId], references: [id])
-
-  // make sure that that is no same ingredient for a user.
-  @@unique([ingredient, userId])
-
-}
-
-// this will only store units. ex : tablespoon , cup , teaspoon
-model Unit {
-  id               Int                @id @default(autoincrement())
-  unit             String             @unique
-  recipeIngredient RecipeIngredient[]
-  // to show user added units in search
-  userId           Int?
-  user             User?              @relation(fields: [userId], references: [id])
-
-  // make sure that that is no same unit for a user.
-  @@unique([unit, userId])
-}
-
 model CookingSteps {
-  id        Int     @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   step      String
   stepOrder Int
   recipeId  Int
